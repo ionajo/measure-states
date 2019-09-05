@@ -18,7 +18,5 @@ ogr2ogr %output% -sql ^
  "select name, (ogr_geom_area/%factor%) as %unit% from projected order by ogr_geom_area desc" ^
  projected.shp
 
-
-
 rem clean up by deleting intermidiate layers
 del projected.*
