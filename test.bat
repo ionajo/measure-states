@@ -13,7 +13,7 @@ ogr2ogr projected.shp -sql ^
 
 rem Use ogr2ogr internal measurement feature
 ogr2ogr output.csv -sql ^
- "select name, (ogr_geom_area/%factor%) as %unit% from projected" ^
+ "select name, (ogr_geom_area/%factor%) as %unit% from projected order by ogr_geom_area desc" ^
  projected.shp
 
 rem Delete intermediate files
