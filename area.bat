@@ -1,8 +1,24 @@
-:: run program
+rem run program
 ogr2ogr --version
 
-:: Create projected GeoJSON and select three states
-ogr2ogr -f geojson ../data/projected.geojson -sql "select name from ne_10m_admin_1_states_provinces_lakes where name in ('Texas','Alaska','Kentucky')" -s_srs EPSG:4326 -t_srs EPSG:5070 ../data/ne_10m_admin_1_states_provinces_lakes.shp
+rem make variables
+set layer=ne_10m_admin_1_states_provinces_lakes
+set states=where name in ('Kentucky','Texas','Alaska')
+set unit=sq_mi
+set factor=2.59e+6
+set output=area.csv
 
-:: Use ogr2ogr internal measurement feature
-ogr2ogr -f CSV output.csv -sql "select name, (OGR_GEOM_AREA/1000000) as sq_km from ne_10m_admin_1_states_provinces_lakes" ../data/projected.geojson
+rem project layer
+ogr2ogr projected.shp -sql "select name from %layer% %states%" ^
+ -s_srs EPSG:4326 -t_srs EPSG:5070 ^
+ ..\data\%layer%.shp
+
+rem calculate area
+ogr2ogr %output% -sql ^
+ "select name, (ogr_geom_area/%factor%) as %unit% from projected order by ogr_geom_area desc" ^
+ projected.shp
+
+
+
+rem clean up by deleting intermidiate layers
+del projected.*
